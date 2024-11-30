@@ -1,15 +1,20 @@
 async function inst(context) {
   const installationId = context.payload.installation.id;
-  const repositories = context.payload.repositories;
-
-  for (const repo of repositories) {
+  const { data } = await context.octokit.apps.listReposAccessibleToInstallation(
+    {
+      installation_id: installationId,
+    }
+  );
+  for (const repo of data.repositories) {
+    console.log(repo);
     const owner = repo.owner.login;
     const repoName = repo.name;
 
-    app.log.info(`Creating config.js in repository: ${owner}/${repoName}`);
+    console.log(`Creating config.js in repository: ${owner}/${repoName}`);
 
     try {
       const configContent = `module.exports = {
+      "entryFile" : "index.js",
       "routesFolder" : "routes",
       "outputFolder" : "docwizOutput"
       };`;
@@ -61,11 +66,9 @@ async function inst(context) {
         sha: commit.data.sha,
       });
 
-      app.log.info(`config.js created successfully in ${owner}/${repoName}`);
+      return { success: true, message: "Config file created successfully." };
     } catch (error) {
-      app.log.error(
-        `Error creating config.js in ${owner}/${repoName}: ${error.message}`
-      );
+      return { success: false, message: error.message };
     }
   }
 }
