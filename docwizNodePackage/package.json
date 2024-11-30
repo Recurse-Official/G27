@@ -1,12 +1,27 @@
 {
-  "name": "docwiznodepackage",
+  "name": "docwiz",
   "version": "1.0.0",
+  "description": "Your goto Api Documentation automater",
   "main": "index.js",
+  "bin": {
+    "docwiz-read": "./read.js",
+    "docwiz-init": "./createConfig.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShivaSaiCharanD/docwiz.git"
+  },
+  "keywords": [
+    "API",
+    "Documentation"
+  ],
+  "author": "If_Loop",
   "license": "ISC",
-  "description": ""
+  "bugs": {
+    "url": "https://github.com/ShivaSaiCharanD/docwiz/issues"
+  },
+  "homepage": "https://github.com/ShivaSaiCharanD/docwiz#readme"
 }
