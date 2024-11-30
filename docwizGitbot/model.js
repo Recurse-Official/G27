@@ -21,7 +21,7 @@ Method: Mention the HTTP method (e.g., GET, POST).
 Description: Provide a concise explanation of the endpoint's purpose.
 Body/Params: Use JSON format to list the expected request body or query parameters with descriptions.
 Response Type and Sample Data: Specify the response type (e.g., application/json) and include a sample response in JSON format.
-Ensure the format remains consistent across all endpoints. Give the whole response simple JSON format`
+Ensure the format remains consistent across all endpoints. Give the whole response in plain text format without Markdown or special characters.`
                 }
             ],
             temperature: 1.0,
@@ -31,7 +31,9 @@ Ensure the format remains consistent across all endpoints. Give the whole respon
         });
 
         if (response && response.choices && response.choices.length > 0) {
-            return response.choices[0].message.content
+            const output = response.choices[0].message.content;
+            const plainText = output.replace(/[\*]/g, '').trim();
+            return plainText;
         } else {
             console.error("Error: No valid choices found in the response.");
         }
