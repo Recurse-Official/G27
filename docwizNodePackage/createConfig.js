@@ -3,14 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 
-// Default configuration
 const config = {
     name: "your-project-name",
     "input_path": "./input",
     "output_path": "./output"
 };
 
-// Determine the user's project root
 const userProjectRoot = process.cwd(); 
 
 
@@ -24,12 +22,4 @@ fs.writeFile(configPath, `module.exports = ${JSON.stringify(config, null, 2)};`,
     }
 });
 
-config["name-of-file"] = "docwiz.config.js";
 
-fs.writeFile(configPath, `module.exports = ${JSON.stringify(config, null, 2)};`, (err) => {
-    if (err) {
-        console.error('Error writing updated config file:', err);
-    } else {
-        console.log('Updated config file created successfully at', configPath);
-    }
-});

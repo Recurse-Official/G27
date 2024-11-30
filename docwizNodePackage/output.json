@@ -1,0 +1,10 @@
+{
+  "sample.js": {
+    "content": "const express = require('express');\n\nconst router = express.Router();\n\nrouter.get('/sample', (req, res) => {\n    res.send('GET request to the sample route');\n});\n\nmodule.exports = router;",
+    "response": "```json\n{\n  \"API Documentation\": {\n    \"endpoints\": [\n      {\n        \"Route\": \"/sample\",\n        \"Method\": \"GET\",\n        \"Description\": \"Returns a sample response for demonstration purposes.\",\n        \"Body/Params\": {},\n        \"Response Type\": \"text/plain\",\n        \"Sample Data\": \"GET request to the sample route\"\n      }\n    ]\n  }\n}\n```"
+  },
+  "just.js": {
+    "content": "const express = require('express');\n\nconst router = express.Router();\n\nrouter.post('/submit', (req, res) => {\n    const data = req.body;\n    res.status(200).send({ message: 'Data received successfully', data: data });\n});\n\nmodule.exports = router;",
+    "response": "```json\n{\n  \"API_Documentation\": {\n    \"Route\": \"/submit\",\n    \"Method\": \"POST\",\n    \"Description\": \"This endpoint accepts data submissions and responds with a confirmation message along with the submitted data.\",\n    \"Body/Params\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"data\": {\n          \"type\": \"any\",\n          \"description\": \"The data being submitted by the user.\"\n        }\n      },\n      \"required\": [\"data\"]\n    },\n    \"Response_Type\": \"application/json\",\n    \"Sample_Response\": {\n      \"status\": 200,\n      \"message\": \"Data received successfully\",\n      \"data\": {\n        \"example_key\": \"example_value\"\n      }\n    }\n  }\n}\n```"
+  }
+}

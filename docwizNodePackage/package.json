@@ -5,7 +5,8 @@
   "main": "index.js",
   "bin": {
     "docwiz-read": "./read.js",
-    "docwiz-init": "./createConfig.js"
+    "docwiz-init": "./createConfig.js",
+    "docwiz-gen": "./gen.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

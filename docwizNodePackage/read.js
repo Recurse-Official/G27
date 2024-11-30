@@ -1,38 +1,37 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+const { main } = require('./model');
 
-const appRoot = process.cwd();
-const configFilePath = path.join(appRoot, 'docwiz.config.js');
-const {main} = require('./model');
-let config;
-try {
-    config = require(configFilePath);
+async function processFiles(configPath) {
+    const config = require(configPath);
+
     if (!config.input_path) {
         throw new Error('Key "input_path" not found in config file.');
     }
-} catch (error) {
-    console.error(`Error reading config file at ${configFilePath}: ${error.message}`);
-    process.exit(1);
+
+    const inputPath = path.resolve(process.cwd(), config.input_path);
+    const allDocs = [];
+
+    const files = await fs.promises.readdir(inputPath);
+    for (const file of files) {
+        const filePath = path.join(inputPath, file);
+
+        try {
+            const data = await fs.promises.readFile(filePath, 'utf8');
+            const response = await main(data);
+            const formattedResponse = response.replace(/\\n/g, '\n');
+            allDocs.push({
+                file,
+                documentation: formattedResponse,
+            });
+            console.log(formattedResponse);
+        } catch (error) {
+            console.error(`Error processing file ${file}: ${error.message}`);
+        }
+    }
+    console.log(allDocs);
+    return allDocs;
 }
 
-const inputPath = path.resolve(appRoot, config.input_path);
-
-fs.readdir(inputPath, (err, files) => {
-    if (err) {
-        return console.error(`Unable to scan directory at ${inputPath}: ${err.message}`);
-    }
-
-    files.forEach(file => {
-        const filePath = path.join(inputPath, file);
-        fs.readFile(filePath, 'utf8', (err, data) => {
-            if (err) {
-                return console.error(`Unable to read file ${filePath}: ${err.message}`);
-            }
-            main(data).then(response => {
-                console.log(`Response for ${file}:\n${response}\n`);
-            });
-            console.log(`Content of ${file}:\n${data}\n`);
-        });
-    });
-});
+module.exports = { processFiles };

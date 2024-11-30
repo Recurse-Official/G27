@@ -4,7 +4,6 @@ const path = require('path');
 const installOpenAI = () => {
     try {
         require.resolve('openai');
-        console.log("'openai' module is already installed.");
     } catch (err) {
         console.log("'openai' module is missing. Installing now...");
         execSync('npm install openai', { stdio: 'inherit', cwd: path.resolve(__dirname) });
@@ -15,9 +14,8 @@ installOpenAI();
 
 
 const { OpenAI } = require('openai');
-// require('dotenv').config();
 
-const token = process.env.OPENAI_KEY || "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";
+const token = process.env.OPENAI_KEY || "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";
 const endpoint = "https://models.inference.ai.azure.com";
 const modelName = "gpt-4o-mini";
 
@@ -37,7 +35,22 @@ Method: Mention the HTTP method (e.g., GET, POST).
 Description: Provide a concise explanation of the endpoint's purpose.
 Body/Params: Use JSON format to list the expected request body or query parameters with descriptions.
 Response Type and Sample Data: Specify the response type (e.g., application/json) and include a sample response in JSON format.
-Ensure the format remains consistent across all endpoints. Give the whole response simple JSON format`
+Ensure the format remains consistent across all endpoints. Give the whole response simple JSON format. Strictly follow the format:
+
+{
+  endpoints: [
+    {
+      route: String,
+      method: String,
+      description: String,
+      'body/params': JSON(do not use '\n' in JSON and do not String for keys),
+      response_type: String,
+      sample_response: String
+    }
+  ]
+}
+
+`
                 }
             ],
             temperature: 1.0,
