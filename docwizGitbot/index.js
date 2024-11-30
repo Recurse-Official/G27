@@ -1,7 +1,11 @@
 const { extractDocs } = require("./model");
 const { createSingleCommit } = require("./createSingleCommit");
-
+const { inst } = require("./installationEvent");
 module.exports = (app) => {
+  app.on("installation", async (context) => {
+    await inst(context);
+  });
+
   app.on("push", async (context) => {
     const { repository, pusher, head_commit, ref } = context.payload;
     if (pusher.name === "DocBot") {
@@ -81,7 +85,7 @@ module.exports = (app) => {
         context
       );
 
-      if(resSingleCommit.success) {
+      if (resSingleCommit.success) {
         app.log.info("Single commit created successfully.");
       } else {
         app.log.error("Error creating single commit.");

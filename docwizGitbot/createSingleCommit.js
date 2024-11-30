@@ -52,11 +52,11 @@ async function createSingleCommit(repository, branch, outputFolder, allDocs, mar
       parents: [baseSha],
       committer: {
         name: "DocBot",
-        email: "docbot@example.com",
+        email: "pvrkmsbunny@gmail.com",
       },
       author: {
         name: "DocBot",
-        email: "docbot@example.com",
+        email: "pvrkmsbunny@gmail.com",
       },
     });
     await context.octokit.git.updateRef({
