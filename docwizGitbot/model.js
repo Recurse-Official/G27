@@ -5,7 +5,7 @@ const token = process.env.OPENAI_KEY;
 const endpoint = "https://models.inference.ai.azure.com";
 const modelName = "gpt-4o-mini";
 
-async function main(context) {
+async function extractDocs(context) {
 
     const client = new OpenAI({ baseURL: endpoint, apiKey: token });
 
@@ -14,7 +14,7 @@ async function main(context) {
             messages: [
                 { role: "system", content: context },
                 {
-                    role: "user", content: `Generate API documentation for the given code in the following format:
+                    role: "user", content: `Identify the language and framework used and generate API documentation for the given code in the following format:
 
 Route: Specify the API endpoint (e.g., /example-route).
 Method: Mention the HTTP method (e.g., GET, POST).
@@ -43,4 +43,4 @@ Ensure the format remains consistent across all endpoints. Give the whole respon
     }
 }
 
-module.exports = { main };
+module.exports = { extractDocs };

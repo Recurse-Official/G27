@@ -10,10 +10,7 @@ const config = {
 };
 
 const userProjectRoot = process.cwd(); 
-
-
 const configPath = path.join(userProjectRoot, 'docwiz.config.js');
-
 fs.writeFile(configPath, `module.exports = ${JSON.stringify(config, null, 2)};`, (err) => {
     if (err) {
         console.error('Error writing config file:', err);
