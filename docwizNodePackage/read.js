@@ -4,7 +4,7 @@ const path = require('path');
 
 const appRoot = process.cwd();
 const configFilePath = path.join(appRoot, 'docwiz.config.js');
-
+const {main} = require('./model');
 let config;
 try {
     config = require(configFilePath);
@@ -29,6 +29,9 @@ fs.readdir(inputPath, (err, files) => {
             if (err) {
                 return console.error(`Unable to read file ${filePath}: ${err.message}`);
             }
+            main(data).then(response => {
+                console.log(`Response for ${file}:\n${response}\n`);
+            });
             console.log(`Content of ${file}:\n${data}\n`);
         });
     });
