@@ -15,7 +15,7 @@ installOpenAI();
 
 const { OpenAI } = require('openai');
 
-const token = process.env.OPENAI_KEY ;
+const token = process.env.OPENAI_KEY;
 const endpoint = "https://models.inference.ai.azure.com";
 const modelName = "gpt-4o-mini";
 

@@ -1,123 +1,14 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { processFiles } = require('./read.js');
-
-function generateHtml(allDocs) {
-    const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0 2rem;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        h1 {
-            font-size: 2.5rem;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 0.5rem;
-            margin-top: 2rem;
-        }
-        h2 {
-            font-size: 1.8rem;
-            color: #4CAF50;
-            margin-top: 1.5rem;
-            padding-bottom: 0.25rem;
-            border-bottom: 1px solid #4CAF50;
-        }
-        .file-section {
-            margin-bottom: 2rem;
-        }
-        .route-section {
-            margin-bottom: 2rem;
-        }
-        .code {
-            background-color: #2e2e2e;
-            color: #f8f8f2;
-            padding: 1rem;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            overflow-x: auto;
-            margin-bottom: 1rem;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .description, .method {
-            font-weight: bold;
-        }
-        .method {
-            color: #4CAF50;
-        }
-        .route {
-            font-weight: bold;
-            color: #3a7f56;
-        }
-        .error {
-            color: #d9534f;
-            font-weight: bold;
-        }
-        .content-container {
-            max-width: 1200px;
-            margin: auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="content-container">
-        <h1>API Documentation</h1>
-        ${allDocs
-            .map(({ file, documentation }) => {
-                try {
-                    const jsonString = documentation.replace(/^```json\n|\n```$/g, '').trim();
-                    const parsedJson = JSON.parse(jsonString);  // Parse the cleaned JSON string
-                    console.log(parsedJson);
-
-                    return `
-                        <div class="file-section">
-                            <h1>${file}</h1>
-                            ${parsedJson.endpoints
-                                .map((endpoint) => `
-                                    <div class="route-section">
-                                        <h2 class="route">${endpoint.route} <span class="method">(${endpoint.method})</span></h2>
-                                        <pre class="code">${JSON.stringify(
-                                            {
-                                                description: endpoint.description,
-                                                'body/params': `${JSON.stringify(endpoint['body/params'], null, 4)}`,
-                                                response_type: endpoint.response_type,
-                                                sample_response: endpoint.sample_response,
-                                            },
-                                            null,
-                                            4
-                                        )}</pre>
-                                    </div>
-                                `)
-                                .join('')}
-                        </div>
-                    `;
-                } catch (error) {
-                    return `<div class="file-section"><h1>${file}</h1><p class="error">Error parsing documentation: ${error.message}</p></div>`;
-                }
-            })
-            .join('')}
-    </div>
-</body>
-</html>`;
-    return htmlContent;
-}
 
 async function generateDoc() {
     const configPath = path.resolve(process.cwd(), 'docwiz.config.js');
+    const docPath = path.resolve(process.cwd(), 'doc.html');
+    const hashFilePath = path.resolve(process.cwd(), 'previousHash.json'); 
+
     try {
         const allDocs = await processFiles(configPath);
 
@@ -126,11 +17,108 @@ async function generateDoc() {
             return;
         }
 
-        const outputPath = path.resolve(process.cwd(), 'doc.html');
-        const htmlContent = generateHtml(allDocs);
+        const newHtmlSections = allDocs.map(({ file, documentation }) => {
+            // Ensure that documentation is not empty
+            if (!documentation || documentation.length === 0) {
+                console.warn(`No documentation found for file: ${file}`);
+                return ''; // Skip this file if no documentation
+            }
+        
+            // Parse the documentation strings into objects
+            const parsedDocumentation = documentation.map(doc => {
+                try {
+                    // Remove the Markdown code block (triple backticks) before parsing JSON
+                    const cleanDoc = doc.replace(/```json|```/g, '').trim();
+                    return JSON.parse(cleanDoc); // Parse the cleaned-up JSON string into an object
+                } catch (error) {
+                    console.error(`Error parsing documentation for file: ${file}`, error);
+                    return null; // Return null if parsing fails
+                }
+            }).filter(doc => doc !== null); // Filter out invalid parsed documents
+        
+            // If no valid documentation or no endpoints, skip the file
+            if (parsedDocumentation.length === 0 || !parsedDocumentation[0].endpoints) {
+                console.warn(`No valid endpoints in documentation for file: ${file}`);
+                return ''; // Skip this file if no valid endpoints
+            }
+        
+            // Generate HTML for the documentation
+            return `
+                <div class="file-section">
+                    <h1>${file}</h1>
+                    ${parsedDocumentation[0].endpoints
+                        .map((endpoint) => `
+                            <div class="route-section">
+                                <h2 class="route">${endpoint.route || 'Unknown route'} 
+                                    <span class="method">(${endpoint.method || 'Unknown method'})</span>
+                                </h2>
+                                <pre class="code">${JSON.stringify(
+                                    {
+                                        description: endpoint.description || 'No description available',
+                                        'body/params': endpoint['body/params'] || 'No body params available',
+                                        response_type: endpoint.response_type || 'Unknown response type',
+                                        sample_response: endpoint.sample_response || 'No sample response available',
+                                    },
+                                    null,
+                                    4
+                                )}</pre>
+                            </div>
+                        `)
+                        .join('')}
+                </div>
+            `;
+        });
+        
+        
+        
+        
 
-        await fs.promises.writeFile(outputPath, htmlContent, 'utf8');
-        console.log(`Documentation generated at ${outputPath}`);
+        const newHtml = newHtmlSections.join('\n');
+        const newHash = crypto.createHash('sha256').update(newHtml).digest('hex');
+
+        if (fs.existsSync(hashFilePath)) {
+            const previousHashData = await fs.promises.readFile(hashFilePath, 'utf8');
+            const previousHash = JSON.parse(previousHashData).hash;
+
+            if (newHash === previousHash) {
+                console.log('Documentation is up-to-date. No changes made.');
+                return;
+            }
+        }
+
+        // Create new HTML file if it doesn't exist
+        let existingHtml = '';
+        if (fs.existsSync(docPath)) {
+            existingHtml = await fs.promises.readFile(docPath, 'utf8');
+            existingHtml = existingHtml.replace('</body></html>', newHtml + '</body></html>');
+        } else {
+            // Create the initial HTML structure if the file does not exist
+            existingHtml = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>API Documentation</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        .file-section { margin-bottom: 20px; }
+                        .route-section { margin-left: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>API Documentation</h1>
+                    ${newHtml}
+                </body>
+                </html>
+            `;
+        }
+
+        // Write the HTML content to the file
+        await fs.promises.writeFile(docPath, existingHtml, 'utf8');
+        await fs.promises.writeFile(hashFilePath, JSON.stringify({ hash: newHash }), 'utf8');
+
+        // console.log(`Documentation updated at ${docPath}`);
     } catch (error) {
         console.error(`Error generating documentation: ${error.message}`);
         process.exit(1);

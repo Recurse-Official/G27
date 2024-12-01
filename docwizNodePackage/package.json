@@ -1,6 +1,6 @@
 {
   "name": "docwiz",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Your goto Api Documentation automater",
   "main": "index.js",
   "bin": {
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/ShivaSaiCharanD/docwiz/issues"
   },
-  "homepage": "https://github.com/ShivaSaiCharanD/docwiz#readme"
+  "homepage": "https://github.com/ShivaSaiCharanD/docwiz#readme",
+  "dependencies": {
+    "openai": "^4.73.1"
+  }
 }
