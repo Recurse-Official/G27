@@ -13,11 +13,11 @@ async function inst(context) {
     console.log(`Creating config.js in repository: ${owner}/${repoName}`);
 
     try {
-      const configContent = `module.exports = {
+      const configContent = `{
       "entryFile" : "index.js",
       "routesFolder" : "routes",
       "outputFolder" : "docwizOutput"
-      };`;
+      }`;
       const blob = await context.octokit.git.createBlob({
         owner,
         repo: repoName,
@@ -37,7 +37,7 @@ async function inst(context) {
         base_tree: baseSha,
         tree: [
           {
-            path: "config.js",
+            path: "docwiz.config.json",
             mode: "100644",
             type: "blob",
             sha: blob.data.sha,

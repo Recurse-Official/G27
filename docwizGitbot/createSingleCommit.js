@@ -1,4 +1,4 @@
-async function createSingleCommit(repository, branch, outputFolder, allDocs, markdownContent, context) {
+async function createSingleCommit(repository, branch, outputFolder, allDocs, htmlContent, context, isHtml) {
   try {
     const commitMessage = "Add documentation files in a single commit [DocBot-Skip]";
     const owner = repository.owner.login;
@@ -17,14 +17,16 @@ async function createSingleCommit(repository, branch, outputFolder, allDocs, mar
       content: docBuffer.toString("base64"),
       encoding: "base64",
     });
-    const markdownFilePath = `${outputFolder}/documentation.md`;
-    const markdownBuffer = Buffer.from(markdownContent);
-    const markdownBlob = await context.octokit.git.createBlob({
+
+    const htmlFilePath = `${outputFolder}/documentation.html`;
+    const htmlBuffer = Buffer.from(htmlContent);
+    const htmlBlob = await context.octokit.git.createBlob({
       owner,
-      repo ,
-      content: markdownBuffer.toString("base64"),
+      repo,
+      content: htmlBuffer.toString("base64"),
       encoding: "base64",
     });
+
     const tree = await context.octokit.git.createTree({
       owner,
       repo ,
@@ -37,10 +39,10 @@ async function createSingleCommit(repository, branch, outputFolder, allDocs, mar
           sha: docBlob.data.sha,
         },
         {
-          path: markdownFilePath,
+          path: htmlFilePath,
           mode: "100644",
           type: "blob",
-          sha: markdownBlob.data.sha,
+          sha: htmlBlob.data.sha,
         },
       ],
     });
