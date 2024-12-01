@@ -15,6 +15,8 @@ async function extractDocs(context) {
                 { role: "system", content: context },
                 {
                     role: "user", content: `Identify the language and framework used and generate API documentation for the given code in the following format:
+                    Very Important Note : Only provide documentation for the API endpoints. Do not include any other code or comments or functions or other blocks.
+                    If there are no API endpoints, please provide a message stating that no endpoints were found.
 
 Route: Specify the API endpoint (e.g., /example-route).
 Method: Mention the HTTP method (e.g., GET, POST).

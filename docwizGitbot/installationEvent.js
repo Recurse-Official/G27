@@ -52,11 +52,11 @@ async function inst(context) {
         parents: [baseSha],
         committer: {
           name: "DocBot",
-          email: "docbot@example.com",
+          email: "pvrkmsbunny@gmail.com",
         },
         author: {
           name: "DocBot",
-          email: "docbot@example.com",
+          email: "pvrkmsbunny@gmail.com",
         },
       });
       await context.octokit.git.updateRef({

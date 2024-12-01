@@ -75,7 +75,7 @@ module.exports = (app) => {
       const branch = ref.split("/").pop();
       const message = `New commit pushed by ${pusher.name}: ${head_commit.message}`;
 
-      const { routesFolder } = config;
+      const { routesFolder, outputFolder } = config;
       const changedFiles = [
         ...head_commit.modified,
         ...head_commit.added,
@@ -106,32 +106,37 @@ module.exports = (app) => {
       });
       app.log.info(`Files fetched from ${config.routesFolder}.`);
       for (const file of fileList.data) {
-        app.log.info(`Processing file: ${file.path}`);
-        if (file.type === "file") {
-          const fileContent = await context.octokit.repos.getContent({
-            owner: repository.owner.login,
-            repo: repository.name,
-            path: file.path,
-          });
+        // if (relevantChanges.includes(file.path)) {
+          app.log.info(`Processing file: ${file.path}`);
+          if (file.type === "file") {
+            const fileContent = await context.octokit.repos.getContent({
+              owner: repository.owner.login,
+              repo: repository.name,
+              path: file.path,
+            });
 
-          const content = Buffer.from(
-            fileContent.data.content,
-            "base64"
-          ).toString("utf8");
-          const response = await extractDocs(content);
+            const content = Buffer.from(
+              fileContent.data.content,
+              "base64"
+            ).toString("utf8");
+            const response = await extractDocs(content);
 
-          const formattedResponse = response.replace(/\\n/g, "\n");
+            const formattedResponse = response.replace(/\\n/g, "\n");
 
-          allDocs.push({
-            file: file.path,
-            documentation: formattedResponse,
-          });
-          htmlContent += `
-          <div class="route">
-            <h2>${file.path}</h2>
-            <pre>${formattedResponse}</pre>
-          </div>
-      `;
+            allDocs.push({
+              file: file.path,
+              documentation: formattedResponse,
+            });
+            htmlContent += `
+            <div class="route">
+              <h2>${file.path}</h2>
+              <pre>${formattedResponse}</pre>
+            </div>`;
+          // } else {
+            // app.log.info(
+              // `Skipping file: ${file.path} as it is not in relevantChanges.`
+            // );
+          // }
         }
       }
       htmlContent += `
