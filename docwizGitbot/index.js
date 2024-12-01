@@ -86,7 +86,7 @@ module.exports = (app) => {
       );
 
       if (resSingleCommit.success) {
-        app.log.info("Single commit created successfully.")
+        app.log.info("Single commit created successfully.");
       } else {
         app.log.error("Error creating single commit.");
       }
