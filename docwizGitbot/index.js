@@ -15,27 +15,62 @@ module.exports = (app) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>API Documentation</title>
 
-    <style>
+  <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       line-height: 1.6;
-      margin: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f6f9;
+      color: #333;
     }
     h1 {
       text-align: center;
-      color: #333;
-    }
-    h2 {
-      color: #555;
-    }
-    pre {
-      background: #f4f4f4;
-      padding: 10px;
-      border: 1px solid #ddd;
-      overflow-x: auto;
+      color: #1a73e8;
+      border-bottom: 2px solid #1a73e8;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+      font-weight: 600;
     }
     .route {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .route:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+    }
+    .route h2 {
+      color: #1a73e8;
+      background-color: #f0f4ff;
+      padding: 15px 20px;
+      margin: 0;
+      font-size: 1.2em;
+      border-bottom: 1px solid #e0e6f0;
+    }
+    pre {
+      background: #f8f9fa;
+      padding: 20px;
+      border: none;
+      border-radius: 0 0 8px 8px;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'Courier New', monospace;
+      font-size: 0.9em;
+      line-height: 1.5;
+      color: #37474f;
+    }
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      .route {
+        margin-bottom: 15px;
+      }
     }
   </style>
 </head>
@@ -132,11 +167,7 @@ module.exports = (app) => {
               <h2>${file.path}</h2>
               <pre>${formattedResponse}</pre>
             </div>`;
-          // } else {
-            // app.log.info(
-              // `Skipping file: ${file.path} as it is not in relevantChanges.`
-            // );
-          // }
+      
         }
       }
       htmlContent += `
